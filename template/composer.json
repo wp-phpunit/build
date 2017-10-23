@@ -1,0 +1,24 @@
+{
+    "name": "aaemnnosttv/wp-phpunit",
+    "description": "WordPress core PHPUnit library.",
+    "type": "library",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Evan Mattson",
+            "email": "me@aaemnnost.tv"
+        },
+        {
+            "name": "WordPress Community",
+            "homepage": "https://wordpress.org/about/"
+        }
+    ],
+    "autoload": {
+        "files": ["__loaded.php"]
+    },
+    "extra": {
+        "wp-phpunit": {
+            "version": 0
+        }
+    }
+}

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ ! -d bin ]; then
+    echo "This script must be run from the project root."
+    exit 1
+elif [ ! ${WP_DEVELOP_REPO} ]; then
+    echo "No git path provided for WP_DEVELOP_REPO."
+    exit 1
+elif [ ! ${WP_PHPUNIT_REPO} ]; then
+    echo "No git path provided for WP_PHPUNIT_REPO."
+    exit 1
+fi
+
+if [ ! -d repos/wordpress ]; then
+    echo "Cloning ${WP_DEVELOP_REPO} ..."
+    git clone ${WP_DEVELOP_REPO} repos/wordpress
+else
+    echo "Repository exists, synchronizing with origin..."
+    git --git-dir=repos/wordpress/.git pull origin master
+fi
+
+if [ ! -d repos/package ]; then
+    echo "Cloning ${WP_PHPUNIT_REPO} ..."
+    git clone ${WP_PHPUNIT_REPO} repos/package
+else
+    echo "Repository exists, synchronizing with origin..."
+    git --git-dir=repos/package/.git pull origin master
+fi
+
+php src/build.php
