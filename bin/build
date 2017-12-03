@@ -18,6 +18,7 @@ if [ ! -d repos/wordpress ]; then
     git clone ${WP_DEVELOP_REPO} repos/wordpress
 else
     echo "Repository exists, synchronizing with origin..."
+    git --git-dir=repos/wordpress/.git fetch -t
     git --git-dir=repos/wordpress/.git pull origin master
 fi
 
@@ -26,6 +27,7 @@ if [ ! -d repos/package ]; then
     git clone ${WP_PHPUNIT_REPO} repos/package
 else
     echo "Repository exists, synchronizing with origin..."
+    git --git-dir=repos/package/.git fetch -t
     git --git-dir=repos/package/.git pull origin master
 fi
 
