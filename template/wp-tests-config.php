@@ -16,6 +16,8 @@ if ( file_exists( getenv( 'WP_PHPUNIT__TESTS_CONFIG' ) ) ) {
  * This must be defined as a local variable here as expected by the library's bootstrap.php.
  * @var string
  */
-if ( ! isset( $table_prefix ) || getenv( 'WP_PHPUNIT__TABLE_PREFIX' ) ) {
-    $table_prefix = getenv( 'WP_PHPUNIT__TABLE_PREFIX' ) ? getenv( 'WP_PHPUNIT__TABLE_PREFIX' ) : 'wptests_';
+if ( false !== getenv( 'WP_PHPUNIT__TABLE_PREFIX' ) ) {
+    $table_prefix = getenv( 'WP_PHPUNIT__TABLE_PREFIX' );
+} elseif ( ! isset( $table_prefix ) ) {
+    $table_prefix = 'wptests_';
 }
