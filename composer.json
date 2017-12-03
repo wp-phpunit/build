@@ -1,5 +1,6 @@
 {
-    "name": "aaemnnosttv/wp-phpunit-build",
+    "name": "wp-phpunit/wp-phpunit-build",
+    "description": "The project for building and maintaining the wp-phpunit package.",
     "type": "project",
     "license": "MIT",
     "authors": [
@@ -15,7 +16,7 @@
     "require": {
         "comodojo/zip": "^2.1",
         "composer/semver": "^1.4",
-        "illuminate/container": "^5.5",
+        "illuminate/container": "5.5.*",
         "illuminate/support": "5.5.*",
         "kzykhys/git": "^0.1.2",
         "symfony/filesystem": "^3.3",
@@ -24,5 +25,8 @@
     },
     "require-dev": {
         "symfony/var-dumper": "^3.3"
+    },
+    "scripts": {
+        "build": "bin/build"
     }
 }
