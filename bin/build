@@ -25,6 +25,7 @@ fi
 if [ ! -d repos/package ]; then
     echo "Cloning ${WP_PHPUNIT_REPO} ..."
     git clone ${WP_PHPUNIT_REPO} repos/package
+    git --git-dir=repos/package/.git config core.autocrlf false 
 else
     echo "Repository exists, synchronizing with origin..."
     git --git-dir=repos/package/.git fetch -t
