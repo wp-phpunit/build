@@ -27,6 +27,7 @@
         "symfony/var-dumper": "^3.3"
     },
     "scripts": {
+        "clean": "rm -rf repos/package repos/wordpress",
         "build": "bin/build"
     }
 }

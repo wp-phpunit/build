@@ -5,7 +5,7 @@ php: 7.1
 env:
   global:
     - WP_DEVELOP_REPO=git://develop.git.wordpress.org/
-    - WP_PHPUNIT_REPO=git@github.com:aaemnnosttv/wp-phpunit.git
+    - WP_PHPUNIT_REPO=git@github.com:wp-phpunit/wp-phpunit.git
 
 script: bin/build
 

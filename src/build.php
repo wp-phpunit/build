@@ -20,15 +20,16 @@ $paths->template = "{$paths->root}/template";
 $paths->repos = "{$paths->root}/repos";
 $paths->wordpress = "{$paths->repos}/wordpress";
 $paths->package = "{$paths->repos}/package";
+$container->instance('paths', $paths);
 
-$container->instance('repos', (object) [
-    'wordpress' => tap(new Git, function ($git) use ($paths) {
-        $git->setRepository($paths->wordpress);
-    }),
-    'package' => tap(new Git, function ($git) use ($paths) {
-        $git->setRepository($paths->package);
-    }),
-]);
+$repos = (object)[];
+$repos->wordpress = tap(new Git, function ($git) use ($paths) {
+    $git->setRepository($paths->wordpress);
+});
+$repos->package = tap(new Git, function ($git) use ($paths) {
+    $git->setRepository($paths->package);
+});
+$container->instance('repos', $repos);
 $container->singleton('version_parser', VersionParser::class);
 Container::setInstance($container);
 
@@ -97,19 +98,23 @@ function build($meta, $package_version = null) {
 
         $repos->package->tag->create($package_version);
     } catch (\Exception $e) {
-        var_dump($e);
-        exit('1');
+        abort($e);
     }
 }
 
+function abort($exception) {
+    var_dump($exception);
+    exit('1');
+}
+
 // Crawl tags
-collect($repos->wordpress->tag())->reject(function($version) {
-    // phpunit library was added in 3.7
-    return version_compare($version, '3.7', '<');
+collect($repos->wordpress->tag())->reject(function($tag) {
+    return version_compare($tag, '3.7', '<'); // skip tags before phpunit library was added in 3.7
 })->map(function($tag) use ($repos, $build_version) {
     $wp = $repos->wordpress;
     $package_version = $build_version ? "{$tag}-patch{$build_version}" : $tag;
     $version_parser = Container::getInstance()->make('version_parser');
+    $major_version = collect(explode('.', $package_version))->take(2)->implode('.');
 
     return (object) [
         'tag' => $tag,
@@ -117,24 +122,32 @@ collect($repos->wordpress->tag())->reject(function($version) {
         'sha' => trim(
             $wp->run($wp->getProcessBuilder()->add('rev-parse')->add($tag)->getProcess())
         ),
-        'major_version' => collect(explode('.', $package_version))->take(2)->implode('.'),
+        'major_version' => $major_version,
+        'major_version_normalized' => $version_parser->normalize($major_version),
         'package_version' => $package_version,
-        'version_normalized' => $version_parser->normalize($package_version),
+        'package_version_normalized' => $version_parser->normalize($package_version),
     ];
 })->sortBy('tag_normalized')->reject(function($meta) use ($repos) {
-    // remove any which already exists on the target repository
-    return collect($repos->package->tag())->contains($meta->package_version);
-})->each(function($meta) use ($container, $repos) { // leaves only packages to be built    
-    $major_normalized = $container['version_parser']->normalize($meta->major_version);
-    
-    // Initialize a new "tree-{major-version}" branch if we're starting a tag for a .0 release
-    if (version_compare($major_normalized, $meta->version_normalized, '=')) {
-        echo "\n\nInitializing branch for {$meta->major_version}\n";
-        
-        init_branch($meta);
-    }
+    return collect($repos->package->tag())->contains($meta->package_version); // remove any which already exist on the target repository
+})->each(function($meta) use ($container, $repos) {
+    $major_branch = "tree-{$meta->major_version}";
+    $is_dot_zero = version_compare($meta->major_version_normalized, $meta->package_version_normalized, '=');
+    $branch_exists = collect($repos->package->branch())->contains('name', $major_branch);
 
-    build($meta);
+    if ($is_dot_zero && ! $branch_exists) {
+        echo "\n\nInitializing branch for {$meta->major_version}\n";
+        init_branch($meta, 'master');
+        build($meta);
+
+        try {
+            $repos->package->checkout('master');
+            $repos->package->merge($major_branch, null, ['no-ff' => true]);
+        } catch(\Exception $e) {
+            abort($e);
+        }
+    } else {
+        build($meta);
+    }
 });
 
 echo "\nBuild complete!\n";
