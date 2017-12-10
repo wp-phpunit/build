@@ -20,10 +20,10 @@ $paths->package = "{$paths->repos}/package";
 $container->instance('paths', $paths);
 
 $repos = (object)[];
-$repos->wordpress = tap(new Git, function ($git) use ($paths) {
+$repos->wordpress = tap(new Git, function (Git $git) use ($paths) {
     $git->setRepository($paths->wordpress);
 });
-$repos->package = tap(new Git, function ($git) use ($paths) {
+$repos->package = tap(new Git, function (Git $git) use ($paths) {
     $git->setRepository($paths->package);
 });
 $container->instance('repos', $repos);
