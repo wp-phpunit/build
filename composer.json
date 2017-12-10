@@ -13,6 +13,11 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
+    "autoload": {
+        "files": [
+            "src/functions.php"
+        ]
+    },
     "require": {
         "comodojo/zip": "^2.1",
         "composer/semver": "^1.4",
