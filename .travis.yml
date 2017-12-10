@@ -1,15 +1,23 @@
 language: php
 
-php: 7.1
+php: 7.2
 
 env:
   global:
     - WP_DEVELOP_REPO=git://develop.git.wordpress.org/.git
     - WP_PHPUNIT_REPO=git@github.com:wp-phpunit/wp-phpunit.git
 
-script: bin/build
-
 cache:
   directories:
     - $HOME/.composer/cache
-    - repos
+    - repos/wordpress
+
+script: bin/build
+
+deploy:
+  provider: script
+  script: bin/deploy
+  on:
+    branch: master
+
+before_deploy: openssl aes-256-cbc -K $encrypted_4950820e8b20_key -iv $encrypted_4950820e8b20_iv -in deploy/key.enc -out deploy/key -d
