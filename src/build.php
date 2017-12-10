@@ -2,9 +2,9 @@
 
 namespace Build;
 
+use Composer\Semver\VersionParser;
 use Illuminate\Container\Container;
 use PHPGit\Git;
-use Composer\Semver\VersionParser;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
