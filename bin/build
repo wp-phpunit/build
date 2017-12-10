@@ -13,13 +13,28 @@ elif [ ! ${WP_PHPUNIT_REPO} ]; then
     exit 1
 fi
 
+git config user.name --global ${GIT_NAME}
+git config user.email --global ${GIT_EMAIL}
+
+function sync_repo() {
+    git remote rm origin
+    git remote add origin ${1}
+    git remote -v
+    git fetch origin --tags
+    git checkout master --force
+    git branch -u origin/master
+    git pull origin master
+}
+
 if [ ! -d repos/wordpress ]; then
     echo "Cloning ${WP_DEVELOP_REPO} ..."
     git clone ${WP_DEVELOP_REPO} repos/wordpress
 else
     echo "Repository exists, synchronizing with origin..."
-    git --git-dir=repos/wordpress/.git fetch -t
-    git --git-dir=repos/wordpress/.git pull origin master
+    (
+        cd repos/wordpress
+        sync_repo ${WP_DEVELOP_REPO}
+    )
 fi
 
 if [ ! -d repos/package ]; then
@@ -28,8 +43,10 @@ if [ ! -d repos/package ]; then
     git --git-dir=repos/package/.git config core.autocrlf false 
 else
     echo "Repository exists, synchronizing with origin..."
-    git --git-dir=repos/package/.git fetch -t
-    git --git-dir=repos/package/.git pull origin master
+    (
+        cd repos/package
+        sync_repo ${WP_PHPUNIT_REPO}
+    )
 fi
 
 php src/build.php
