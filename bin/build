@@ -71,7 +71,7 @@ fi
 composer validate --strict --working-dir=template
 
 # Lint all PHP files in the package template
-for file in $(find . -name 'template/*.php'); do
+for file in $(find template -name '*.php'); do
   php -l ${file}
 done
 
