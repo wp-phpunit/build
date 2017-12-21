@@ -2,7 +2,16 @@
 
 set -e
 
-if [ ! -d bin ]; then
+# The name that should be used for commits to the package
+GIT_NAME=${GIT_NAME-}
+# The email that should be used for commits to the package
+GIT_EMAIL=${GIT_EMAIL-}
+# The git URL to the WordPress core develop repository
+WP_DEVELOP_REPO=${WP_DEVELOP_REPO-}
+# The git URL to the target WP PHPUnit package
+WP_PHPUNIT_REPO=${WP_PHPUNIT_REPO-}
+
+if [ ! -d repos ]; then
     echo "This script must be run from the project root."
     exit 1
 elif [ ! ${WP_DEVELOP_REPO} ]; then
@@ -12,9 +21,6 @@ elif [ ! ${WP_PHPUNIT_REPO} ]; then
     echo "No git path provided for WP_PHPUNIT_REPO."
     exit 1
 fi
-
-git config user.name --global ${GIT_NAME}
-git config user.email --global ${GIT_EMAIL}
 
 function sync_repo() {
     git remote rm origin
@@ -40,7 +46,6 @@ fi
 if [ ! -d repos/package ]; then
     echo "Cloning ${WP_PHPUNIT_REPO} ..."
     git clone ${WP_PHPUNIT_REPO} repos/package
-    git --git-dir=repos/package/.git config core.autocrlf false 
 else
     echo "Repository exists, synchronizing with origin..."
     (
@@ -48,5 +53,26 @@ else
         sync_repo ${WP_PHPUNIT_REPO}
     )
 fi
+
+(
+    cd repos/package
+
+    git config core.autocrlf false
+
+    if [ ${GIT_NAME} ]; then
+        git config user.name ${GIT_NAME}
+    fi
+    if [ ${GIT_EMAIL} ]; then
+        git config user.email ${GIT_EMAIL}
+    fi
+)
+
+# Check the validity of the package's composer.json
+composer validate --strict --working-dir=template
+
+# Lint all PHP files in the package template
+for file in $(find . -name 'template/*.php'); do
+  php -l ${file}
+done
 
 php src/build.php
