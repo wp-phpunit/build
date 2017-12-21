@@ -13,20 +13,25 @@ use Symfony\Component\Finder\SplFileInfo;
  *
  * @param \stdClass $meta
  * @param string $starting
+ *
+ * @throws \Illuminate\Container\EntryNotFoundException
  */
-function init_branch($meta, $starting = 'HEAD') {
-	Container::getInstance()
-	         ->get('repos')
-		->package
-		->branch
-		->create("tree-{$meta->major_version}", $starting)
-	;
+function init_branch($meta, $starting = 'HEAD')
+{
+    Container::getInstance()
+        ->get('repos')
+        ->package
+        ->branch
+        ->create("tree-{$meta->major_version}", $starting)
+    ;
 }
 
 /**
  * Build the package for the given version.
  *
  * @param \stdClass $meta
+ * @throws \Comodojo\Exception\ZipException
+ * @throws \Illuminate\Container\EntryNotFoundException
  */
 function build($meta) {
 	echo "\n\nBuilding $meta->tag\n";
