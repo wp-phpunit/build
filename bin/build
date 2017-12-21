@@ -32,7 +32,7 @@ function sync_repo() {
     git pull origin master
 }
 
-if [ ! -d repos/wordpress ]; then
+if [ ! -d repos/wordpress/.git ]; then
     echo "Cloning ${WP_DEVELOP_REPO} ..."
     git clone ${WP_DEVELOP_REPO} repos/wordpress
 else
@@ -43,7 +43,7 @@ else
     )
 fi
 
-if [ ! -d repos/package ]; then
+if [ ! -d repos/package/.git ]; then
     echo "Cloning ${WP_PHPUNIT_REPO} ..."
     git clone ${WP_PHPUNIT_REPO} repos/package
 else
