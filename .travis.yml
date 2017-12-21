@@ -12,6 +12,8 @@ cache:
     - $HOME/.composer/cache
     - repos/wordpress
 
+install: composer install --no-dev --prefer-dist
+
 script: bin/build
 
 deploy:
