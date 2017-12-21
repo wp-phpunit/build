@@ -2,11 +2,6 @@
 
 set -e
 
-echo "Configure SSH authentication"
-eval "$(ssh-agent -s)"
-chmod 600 deploy/key
-ssh-add deploy/key
-
 cd repos/package
 git push -u origin --all
 git push -u origin --tags
