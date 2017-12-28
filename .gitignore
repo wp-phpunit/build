@@ -1,3 +1,4 @@
 /vendor/
 /repos/
 /build/
+.travis/key
