@@ -19,7 +19,7 @@ script: bin/build
 deploy:
   provider: script
   skip_cleanup: true
-  script: travis_retry bin/deploy
+  script: bin/deploy
   on:
     branch: master
 
