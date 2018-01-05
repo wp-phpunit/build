@@ -12,13 +12,13 @@ cache:
     - $HOME/.composer/cache
     - repos/wordpress
 
-install: composer install --no-dev --prefer-dist
+install: travis_retry composer install --no-dev --prefer-dist
 
 script: bin/build
 
 deploy:
   provider: script
-  script: bin/deploy
+  script: travis_retry bin/deploy
   on:
     branch: master
 
