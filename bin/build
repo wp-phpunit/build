@@ -68,7 +68,7 @@ fi
 )
 
 # Check the validity of the package's composer.json
-composer validate --strict --working-dir=template
+composer validate --working-dir=template
 
 # Lint all PHP files in the package template
 for file in $(find template -name '*.php'); do
