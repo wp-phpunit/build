@@ -1,4 +1,5 @@
 /vendor/
 /repos/
 /build/
+/artifacts/
 .travis/key
