@@ -16,10 +16,7 @@
     "autoload": {
         "psr-4": {
             "Build\\": "src"
-        },
-        "files": [
-            "src/functions.php"
-        ]
+        }
     },
     "require": {
         "comodojo/zip": "^2.1",
