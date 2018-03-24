@@ -80,7 +80,7 @@ class Application extends Container
         $this->repoPackage()->checkout($tag->majorBranchName());
 
         (new Filesystem())->remove(
-            (new Finder)->files()->in($this->make('path.repo.package')->ignoreVCS(true))
+            (new Finder)->files()->in($this->make('path.repo.package'))->ignoreVCS(true)
         );
     }
 
