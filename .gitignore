@@ -1,6 +1,6 @@
 /vendor/
 /repos/
-/build/
+/build/*
 !/build/.gitkeep
 /artifacts/
 .travis/key
