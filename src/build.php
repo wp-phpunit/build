@@ -2,68 +2,33 @@
 
 namespace Build;
 
-use Composer\Semver\VersionParser;
-use Illuminate\Container\Container;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use PHPGit\Git;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$container = new Container;
+$app = new Application();
+$app->instance('path.root', dirname(__DIR__));
+$app->instance('path.artifacts', "{$app['path.root']}/artifacts");
+$app->instance('path.templates', "{$app['path.root']}/template");
+$app->instance('path.repo.wordpress', "{$app['path.root']}/repos/wordpress");
+$app->instance('path.repo.package', "{$app['path.root']}/repos/package");
 
-$paths = (object) [];
-$paths->root = dirname(__DIR__);
-$paths->build = "{$paths->root}/build";
-$paths->template = "{$paths->root}/template";
-$paths->repos = "{$paths->root}/repos";
-$paths->wordpress = "{$paths->repos}/wordpress";
-$paths->package = "{$paths->repos}/package";
-$container->instance('paths', $paths);
-
-$repos = (object)[];
-$repos->wordpress = tap(new Git, function (Git $git) use ($paths) {
-    $git->setRepository($paths->wordpress);
+$app->singleton('git.wordpress', function ($app) {
+    return tap(new Git, function (Git $git) use ($app) {
+        $git->setRepository($app['path.repo.wordpress']);
+    });
 });
-$repos->package = tap(new Git, function (Git $git) use ($paths) {
-    $git->setRepository($paths->package);
+$app->singleton('git.package', function ($app) {
+    return tap(new Git, function (Git $git) use ($app) {
+        $git->setRepository($app['path.repo.package']);
+    });
 });
-$container->instance('repos', $repos);
-$container->singleton('version_parser', VersionParser::class);
-Container::setInstance($container);
-
-collect($repos->wordpress->tag())->reject(function($tag) {
-    return version_compare($tag, '3.7', '<'); // skip tags before phpunit library was added in 3.7
-})->map(function($tag) use ($repos) {
-    /* @var Git $wp */
-    $wp = $repos->wordpress;
-    $version_parser = Container::getInstance()->make('version_parser');
-    $major_version = collect(explode('.', $tag))->take(2)->implode('.');
-
-    return (object) [
-        'tag' => $tag,
-        'tag_normalized' => $version_parser->normalize($tag),
-        'major_version' => $major_version,
-        'major_version_normalized' => $version_parser->normalize($major_version),
-        'sha' => trim(
-	        $wp->run($wp->getProcessBuilder()->add('rev-parse')->add($tag)->getProcess())
-        ),
-    ];
-})->sortBy('tag_normalized')->reject(function($meta) use ($repos) {
-    return collect($repos->package->tag())->contains($meta->tag); // remove any which already exist on the target repository
-})->each(function($meta) use ($container, $repos) {
-    $major_branch = "tree-{$meta->major_version}";
-    $is_dot_zero = version_compare($meta->major_version_normalized, $meta->tag_normalized, '=');
-    $branch_exists = collect($repos->package->branch())->contains('name', $major_branch);
-
-    if ($is_dot_zero && ! $branch_exists) {
-        echo "\n\nInitializing branch for {$meta->major_version}\n";
-        init_branch($meta, 'master');
-        build($meta);
-
-        $repos->package->checkout('master');
-        $repos->package->merge($major_branch, null, ['no-ff' => true]);
-    } else {
-        build($meta);
-    }
+$app->singleton('logger', function () {
+    return tap(new Logger('build'), function (Logger $logger) {
+        $logger->pushHandler(new StreamHandler(fopen('php://stdout', 'w')));
+    });
 });
 
-echo "\nBuild complete!\n";
+$app->run();
