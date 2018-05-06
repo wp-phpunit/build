@@ -5,7 +5,7 @@ php: 7.2
 env:
   global:
     - WP_DEVELOP_REPO=git://develop.git.wordpress.org/.git
-    - WP_PHPUNIT_REPO=https://github.com/wp-phpunit/wp-phpunit-test.git
+    - WP_PHPUNIT_REPO=git@github.com:wp-phpunit/wp-phpunit.git
 
 cache:
   directories:
