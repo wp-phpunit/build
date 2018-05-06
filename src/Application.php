@@ -26,6 +26,7 @@ class Application extends Container
             $this->logger()->error(
                 sprintf('%s thrown: %s', get_class($e), $e->getMessage())
             );
+            exit(1);
         }
     }
 
