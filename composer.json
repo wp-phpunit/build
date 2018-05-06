@@ -14,9 +14,9 @@
         "sort-packages": true
     },
     "autoload": {
-        "files": [
-            "src/functions.php"
-        ]
+        "psr-4": {
+            "Build\\": "src"
+        }
     },
     "require": {
         "comodojo/zip": "^2.1",
@@ -24,6 +24,7 @@
         "illuminate/container": "5.5.*",
         "illuminate/support": "5.5.*",
         "kzykhys/git": "^0.1.2",
+        "monolog/monolog": "^1.23",
         "symfony/filesystem": "^3.3",
         "symfony/finder": "^3.3",
         "symfony/options-resolver": "^2.8",

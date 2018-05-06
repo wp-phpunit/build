@@ -1,0 +1,5 @@
+#/usr/env/bin bash
+
+git diff --no-index build/tags-before build/tags-after
+
+exit 0
