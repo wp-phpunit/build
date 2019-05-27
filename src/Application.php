@@ -79,19 +79,8 @@ class Application extends Container
         $branch_exists = collect($this->repoPackage()->branch())->contains('name', $tag->majorBranchName());
 
         if ($tag->isDotZero() && ! $branch_exists) {
-            $this->logger()->debug(
-                sprintf("Initializing branch %s for %s", $tag->majorBranchName(), $tag->name)
-            );
-            try {
-                $this->repoPackage()->branch->create($tag->majorBranchName(), 'master');
-            } catch (\Exception $exception) {
-                $this->logger()->error('Failed to create branch for major version. Exception: ' . $exception->getMessage(), [
-                    'tag' => $tag->name,
-                    'major' => $tag->majorVersion,
-                    'branch' => $tag->majorBranchName(),
-                ]);
-                throw $exception;
-            }
+            $this->logger()->debug("Initializing branch for $tag->name");
+            $this->repoPackage()->branch->create($tag->majorBranchName(), 'master');
         }
 
         $this->repoPackage()->checkout($tag->majorBranchName());
