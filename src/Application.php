@@ -109,7 +109,7 @@ class Application extends Container
             $this->repoWordPress()->archive(
                 "$artifacts_path/source.zip",
                 $tag->sha() . ':tests/phpunit',
-                null,
+                '.',
                 [
                     'format' => 'zip',
                 ]
