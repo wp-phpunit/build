@@ -5,6 +5,7 @@ namespace Build;
 use Comodojo\Zip\Zip;
 use Illuminate\Container\Container;
 use Illuminate\Support\Collection;
+use PHPGit\Exception\GitException;
 use PHPGit\Git;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -26,6 +27,10 @@ class Application extends Container
             $this->logger()->error(
                 sprintf('%s thrown: %s', get_class($e), $e->getMessage())
             );
+            $this->logger()->debug($e->getTraceAsString());
+            if ($e instanceof GitException) {
+                $this->logger()->debug($e->getCommandLine());
+            }
             exit(1);
         }
     }
