@@ -12,6 +12,12 @@ cache:
     - $HOME/.composer/cache
     - repos/wordpress
 
+before_install:
+  - eval "$(ssh-agent -s)"
+  - echo -n "${base64_4950820e8b20_key}" | base64 --decode >.travis/key
+  - chmod 600 .travis/key
+  - ssh-add .travis/key
+
 install: travis_retry composer install --no-dev --prefer-dist
 
 script: bin/build
@@ -22,9 +28,3 @@ deploy:
   script: bin/deploy
   on:
     branch: master
-
-before_script:
-  - openssl aes-256-cbc -K $encrypted_4950820e8b20_key -iv $encrypted_4950820e8b20_iv -in .travis/key.enc -out .travis/key -d
-  - eval "$(ssh-agent -s)"
-  - chmod 600 .travis/key
-  - ssh-add .travis/key
