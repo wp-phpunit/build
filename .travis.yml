@@ -14,7 +14,7 @@ cache:
 
 before_install:
   - eval "$(ssh-agent -s)"
-  - echo -n "${base64_4950820e8b20_key}" | ssh-add -
+  - echo -n "${base64_4950820e8b20_key}" | base64 --decode | ssh-add -
 
 install: travis_retry composer install --no-dev --prefer-dist
 
