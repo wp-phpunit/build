@@ -24,8 +24,8 @@
     "require": {
         "comodojo/zip": "^2.1",
         "composer/semver": "^1.4",
-        "illuminate/container": "5.5.*",
         "illuminate/collections": "^8",
+        "illuminate/container": "^8",
         "kzykhys/git": "^0.1.2",
         "monolog/monolog": "^1.23",
         "symfony/filesystem": "^3.3",
