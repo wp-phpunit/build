@@ -1,6 +1,6 @@
 language: php
 
-php: 7.2
+php: 8.0
 
 env:
   global:
