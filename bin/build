@@ -7,9 +7,9 @@ GIT_NAME=${GIT_NAME-}
 # The email that should be used for commits to the package
 GIT_EMAIL=${GIT_EMAIL-}
 # The git URL to the WordPress core develop repository
-WP_DEVELOP_REPO=${WP_DEVELOP_REPO-}
+WP_DEVELOP_REPO=${WP_DEVELOP_REPO-git://develop.git.wordpress.org/}
 # The git URL to the target WP PHPUnit package
-WP_PHPUNIT_REPO=${WP_PHPUNIT_REPO-}
+WP_PHPUNIT_REPO=${WP_PHPUNIT_REPO-https://github.com/wp-phpunit/wp-phpunit.git}
 
 if [ ! -d repos ]; then
     echo "This script must be run from the project root."

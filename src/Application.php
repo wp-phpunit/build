@@ -49,7 +49,9 @@ class Application extends Container
                 return new WordPressGitTag($tag, $this->repoWordPress());
             })->sortBy(function (WordPressGitTag $tag) {
                 return $tag->versionNormalized();
-            })
+            })->prepend(
+                new WordPressNightly('trunk', $this->repoWordPress())
+            )
         ;
     }
 
@@ -78,7 +80,7 @@ class Application extends Container
     {
         $branch_exists = collect($this->repoPackage()->branch())->contains('name', $tag->majorBranchName());
 
-        if ($tag->isDotZero() && ! $branch_exists) {
+        if (($tag->isDotZero() || "trunk" === $tag->name) && ! $branch_exists) {
             $this->logger()->debug("Initializing branch for $tag->name");
             $this->repoPackage()->branch->create($tag->majorBranchName(), 'master');
         }
@@ -114,7 +116,7 @@ class Application extends Container
         collect((new Finder)->directories()->in($this->make('path.artifacts') . '/source')->depth(0)->exclude(['tests']))
             ->each(function(SplFileInfo $dir) {
                 $this->logger()->debug('Mirroring directory ' . $dir->getRelativePathname());
-                
+
                 (new Filesystem)->mirror(
                     $dir->getRealPath(),
                     $this->make('path.repo.package') . '/' . $dir->getRelativePathname()
@@ -147,7 +149,9 @@ class Application extends Container
             ]);
         }
 
-        $this->repoPackage()->tag->create($tag->name);
+        if ($tag->name !== 'trunk') {
+            $this->repoPackage()->tag->create($tag->name);
+        }
     }
 
     private function mergeBranchIfMajorVersion(WordPressGitTag $tag)
